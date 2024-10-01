@@ -1,4 +1,4 @@
-const int ledPins[] = {8, 9, 10};  // Array of LED pins
+ const int ledPins[] = {8, 9, 10};  // Array of LED pins
 const int buttonPin = 7;
 int buttonState;
 int lastButtonState = LOW;
