@@ -1,0 +1,93 @@
+// Pin connections for 7-segment display
+const int segmentPins[] = {2, 3, 4, 5, 6, 7, 8}; // a, b, c, d, e, f, g
+const int buttonOdd = 9;      // Button to display odd numbers
+const int buttonEven = 10;    // Button to display even numbers
+const int buttonReset = 11;   // Button to reset to 0
+
+int number = 0;
+int lastOddButtonState = LOW;
+int lastEvenButtonState = LOW;
+int lastResetButtonState = LOW;
+int currentOddButtonState;
+int currentEvenButtonState;
+int currentResetButtonState;
+
+byte numbers[10][7] = {
+  {1, 1, 1, 1, 1, 1, 0},  // 0
+  {0, 1, 1, 0, 0, 0, 0},  // 1
+  {1, 1, 0, 1, 1, 0, 1},  // 2
+  {1, 1, 1, 1, 0, 0, 1},  // 3
+  {0, 1, 1, 0, 0, 1, 1},  // 4
+  {1, 0, 1, 1, 0, 1, 1},  // 5
+  {1, 0, 1, 1, 1, 1, 1},  // 6
+  {1, 1, 1, 0, 0, 0, 0},  // 7
+  {1, 1, 1, 1, 1, 1, 1},  // 8
+  {1, 1, 1, 0, 0, 1, 1}   // 9
+};
+
+void setup() {
+  for (int i = 0; i < 7; i++) {
+    pinMode(segmentPins[i], OUTPUT); // Set segment pins as output
+  }
+  pinMode(buttonOdd, INPUT_PULLUP);   // Set odd button with internal pull-up
+  pinMode(buttonEven, INPUT_PULLUP);  // Set even button with internal pull-up
+  pinMode(buttonReset, INPUT_PULLUP); // Set reset button with internal pull-up
+  displayNumber(number); // Display initial number
+}
+
+void loop() {
+  // Read the states of all three buttons
+  currentOddButtonState = digitalRead(buttonOdd);
+  currentEvenButtonState = digitalRead(buttonEven);
+  currentResetButtonState = digitalRead(buttonReset);
+
+  // If the odd button is pressed
+  if (currentOddButtonState == LOW && lastOddButtonState == HIGH) {
+    number = getNextOddNumber(number);
+    displayNumber(number);
+    delay(200); // Debounce delay
+  }
+
+  // If the even button is pressed
+  if (currentEvenButtonState == LOW && lastEvenButtonState == HIGH) {
+    number = getNextEvenNumber(number);
+    displayNumber(number);
+    delay(200); // Debounce delay
+  }
+
+  // If the reset button is pressed
+  if (currentResetButtonState == LOW && lastResetButtonState == HIGH) {
+    number = 0; // Reset to 0
+    displayNumber(number);
+    delay(200); // Debounce delay
+  }
+
+  // Update the last button states
+  lastOddButtonState = currentOddButtonState;
+  lastEvenButtonState = currentEvenButtonState;
+  lastResetButtonState = currentResetButtonState;
+}
+
+void displayNumber(int num) {
+  for (int i = 0; i < 7; i++) {
+    digitalWrite(segmentPins[i], numbers[num][i]); // Set segment states using a for loop
+  }
+}
+
+// Function to get the next odd number
+int getNextOddNumber(int current) {
+  if (current % 2 == 0) {
+    return 1; // If current is even, return 1
+  } else {
+    return (current + 2) % 10; // Move to the next odd number (1 -> 3 -> 5 -> 7 -> 9)
+  }
+}
+
+// Function to get the next even number
+int getNextEvenNumber(int current) {
+  if (current % 2 != 0) {
+    return 0; // If current is odd, return 0
+  } else {
+    return (current + 2) % 10; // Move to the next even number (0 -> 2 -> 4 -> 6 -> 8)
+  }
+}
