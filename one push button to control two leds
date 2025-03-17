@@ -1,0 +1,23 @@
+const int led1 = 13;   // First LED
+const int led2 = 12;   // Second LED
+const int button = 7;  // Button
+int buttonState = 0;
+
+void setup() {
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(button, INPUT_PULLUP); // Internal pull-up resistor
+}
+
+void loop() {
+  buttonState = digitalRead(button); // Read button state
+  
+  if (buttonState == 1) { // Button pressed (LOW due to pull-up)
+    digitalWrite(led1, HIGH);
+    digitalWrite(led2, LOW);
+  } 
+  else {
+    digitalWrite(led1, LOW);
+    digitalWrite(led2, HIGH);
+  }
+}
